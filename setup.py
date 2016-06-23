@@ -15,7 +15,7 @@ setup_params = dict(
     author_email='a2m.dev@yandex.ru',
     description='A collection of convenient interator functions',
     long_description=long_description,
-    url='about:blank',
+    url='https://github.com/alexmalykh/a2m.itertools',
     license='MIT',
     packages=setuptools.find_packages(exclude=['tests']),
     namespace_packages=['a2m'],

@@ -23,6 +23,7 @@ setup_params = dict(
     keywords='itertools iterators',
     test_suite='tests',
 
+    install_requires=['six'],
     setup_requires=['setuptools_scm'],
     use_scm_version=dict(root='.', relative_to=__file__),
     classifiers=[

@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'a2m.itertools'
-copyright = datetime.datetime.now().strftime(u'%Y, AleX Malykh')
+copyright = datetime.datetime.now().strftime(u'%Y, Alex Malykh')
 author = u'Alex Malykh'
 
 # The version info for the project you're documenting, acts as replacement for

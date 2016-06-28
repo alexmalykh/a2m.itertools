@@ -114,6 +114,7 @@ def every_nth(thing, n, shift=0):
     Takes an iterable and returns every n-th element from beginning, optionally shifted by ``shift``
 
     This funcion is just a handy wrapper over :py:func:`itertools.islice`.
+    Indexes are 1-based.
 
     :param thing: an arbitrary iterable
     :param int n: enumerator defining sequence step
@@ -127,7 +128,7 @@ def every_nth(thing, n, shift=0):
         >>> it
         <itertools.islice object at 0x...>
         >>> list(it)
-        [0, 3, 6, 9, 12, 15, 18]
+        [2, 5, 8, 11, 14, 17]
 
     Another example, with non-zero ``shift``:
 
@@ -137,12 +138,12 @@ def every_nth(thing, n, shift=0):
         >>> it
         <itertools.islice object at 0x...>
         >>> list(it)
-        [2, 5, 8, 11, 14, 17]
+        [1, 4, 7, 10, 13, 16, 19]
 
     ..  doctest::
 
         >>> list(every_nth(range(20), 4, -1))
-        [3, 7, 11, 15, 19]
+        [2, 6, 10, 14, 18]
 
     '''
     if not isinstance(n, int):
@@ -155,7 +156,8 @@ def every_nth(thing, n, shift=0):
     elif n == 1:
         it = iter(thing)
     else:
-        it = itertools.islice(thing, shift % n, None, n)
+        # decrease the ``shift`` by unit to ensure indexes are 1-based
+        it = itertools.islice(thing, (shift - 1) % n, None, n)
 
     return it
 
@@ -169,6 +171,7 @@ def even(thing):
     :returns: iterator over all even elements of given sequence
 
     This function is just a wrapper over :py:func:`itertools.islice`.
+    Indexes are 1-based.
 
     Example:
 
@@ -178,10 +181,10 @@ def even(thing):
         >>> it
         <itertools.islice object at 0x...>
         >>> list(it)
-        ['a', 'c', 'e']
+        ['b', 'd', 'f']
 
     '''
-    return itertools.islice(thing, 0, None, 2)
+    return itertools.islice(thing, 1, None, 2)
 
 
 def odd(thing):
@@ -193,6 +196,7 @@ def odd(thing):
     :returns: iterator over all odd elements of given sequence
 
     This function is just a wrapper over :py:func:`itertools.islice`.
+    Indexes are 1-based.
 
     Example:
 
@@ -202,9 +206,9 @@ def odd(thing):
         >>> it
         <itertools.islice object at 0x...>
         >>> list(it)
-        ['b', 'd', 'f']
+        ['a', 'c', 'e']
     '''
-    return itertools.islice(thing, 1, None, 2)
+    return itertools.islice(thing, 0, None, 2)
 
 
 if __name__ == '__main__':

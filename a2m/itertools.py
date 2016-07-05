@@ -12,11 +12,13 @@ implementing some convenient iteration recipes.
 
 from __future__ import absolute_import
 
+import collections
 import itertools
+
 import six
 
 
-__all__ = ('even', 'odd', 'every_nth', 'flatten')
+__all__ = ('even', 'odd', 'every_nth', 'flatten', 'isplit')
 
 
 def flatten(thing, protected_iterables=(), enforce_scalar=None):
@@ -209,6 +211,95 @@ def odd(thing):
         ['a', 'c', 'e']
     '''
     return itertools.islice(thing, 0, None, 2)
+
+
+def isplit(text, sep=None, maxsplit=None):
+    r'''Iterate over words in a string.
+
+    :param text: source string
+    :type text: :py:class:`str` or :py:class:`unicode` (Python 2 only)
+
+    :param sep: words delimiter. If is :py:obj:`None`, any whitespace string is a delimiter
+    :type sep: string or :py:obj:`None`
+
+    :param maxsplit: if is not :py:obj:`None`, at most ``maxsplit`` splits are done
+    :type maxsplit: :py:class:`int` or :py:obj:`None`
+
+    :return: an iterator over words in the ``text`` split by ``sep`` at most ``maxsplit`` times
+    :rtype: generator
+
+    This function implements behaviour of :py:meth:`str.split` in form of an iterator.
+
+    .. note: generated words are :py:class:`unicode` in Python 2.
+
+    Example::
+
+        >>> s = 'lorem ipsum \t dolor sit \n amet'
+        >>> it = isplit(s, ' ', 3)
+        >>> it
+        <generator object isplit at 0x...>
+        >>> s.split(' ', 3)
+        ['lorem', 'ipsum', '\t', 'dolor sit \n amet']
+        >>> next(it)
+        'lorem'
+        >>> list(it)
+        ['ipsum', '\t', 'dolor sit \n amet']
+
+    '''
+    if not isinstance(text, six.string_types):
+        raise TypeError('a string is expected')
+
+    if maxsplit is None:
+        maxsplit = -1
+    elif not isinstance(maxsplit, six.integer_types):
+        raise TypeError('``maxpsplit``: an integer is required')
+
+    joined = six.text_type('').join
+    splitcount = 0
+    chunk = []
+    it = iter(text)
+
+    if sep is None:
+        for char in it:
+            if not char.isspace():
+                chunk.append(char)
+            elif chunk:
+                if splitcount == maxsplit:
+                    chunk.append(char)
+                    chunk.extend(it)
+                    continue
+                yield joined(chunk)
+                chunk = []
+                splitcount += 1
+        else:
+            if chunk:
+                yield joined(chunk)
+
+    elif not isinstance(sep, six.string_types):
+        raise TypeError('``sep`` parameter must be a string or None')
+
+    elif not sep:
+        raise ValueError('``sep``: empty separator')
+
+    else:
+        sep = tuple(sep)
+        window = collections.deque([], len(sep) + 1)
+        for char in it:
+            window.append(char)
+            if len(window) == window.maxlen:
+                chunk.append(window.popleft())
+            window_tuple = tuple(window)
+            if window_tuple == sep:
+                if splitcount == maxsplit:
+                    window = window_tuple + tuple(it)
+                    continue
+                yield joined(chunk)
+                chunk = []
+                splitcount += 1
+                window.clear()
+        else:
+            chunk.extend(window)
+            yield joined(chunk)
 
 
 if __name__ == '__main__':
